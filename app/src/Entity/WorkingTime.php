@@ -24,17 +24,22 @@ class WorkingTime
     private DateTimeInterface $end;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, unique: true)]
-    private DateTimeInterface $endDay;
+    private DateTimeInterface $startDay;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private Employee $employee;
 
-    public function __construct(DateTimeInterface $start, DateTimeInterface $end, Employee $employee)
-    {
+    public function __construct(
+        DateTimeInterface $start,
+        DateTimeInterface $end,
+        DateTimeInterface $startDay,
+        Employee $employee
+    ) {
         $this->id = Uuid::v1();
         $this->start = $start;
         $this->end = $end;
+        $this->startDay = $startDay;
         $this->employee = $employee;
     }
 
@@ -63,14 +68,14 @@ class WorkingTime
         $this->end = $end;
     }
 
-    public function getEndDay(): ?DateTimeInterface
+    public function getStartDay(): ?DateTimeInterface
     {
-        return $this->endDay;
+        return $this->startDay;
     }
 
-    public function setEndDay(DateTimeInterface $endDay): void
+    public function setStartDay(DateTimeInterface $startDay): void
     {
-        $this->endDay = $endDay;
+        $this->startDay = $startDay;
     }
 
     public function getEmployee(): Employee

@@ -16,7 +16,7 @@ final class Version20240517201703 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('CREATE TABLE working_time (id BINARY(16) NOT NULL COMMENT \'(DC2Type:uuid)\', employee_id BINARY(16) NOT NULL COMMENT \'(DC2Type:uuid)\', start DATETIME NOT NULL, end DATETIME NOT NULL, end_day DATE NOT NULL, UNIQUE INDEX UNIQ_31EE2ABF9321ECED (end_day), INDEX IDX_31EE2ABF8C03F15C (employee_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE working_time (id BINARY(16) NOT NULL COMMENT \'(DC2Type:uuid)\', employee_id BINARY(16) NOT NULL COMMENT \'(DC2Type:uuid)\', start DATETIME NOT NULL, end DATETIME NOT NULL, start_day DATE NOT NULL, UNIQUE INDEX UNIQ_31EE2ABF9321ECED (start_day), INDEX IDX_31EE2ABF8C03F15C (employee_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE working_time ADD CONSTRAINT FK_31EE2ABF8C03F15C FOREIGN KEY (employee_id) REFERENCES employee (id)');
     }
 

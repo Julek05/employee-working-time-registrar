@@ -11,7 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<WorkingTime>
  */
-class WorkingTimeRepository extends ServiceEntityRepository
+class WorkingTimeRepository extends ServiceEntityRepository implements WorkingTimeRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
