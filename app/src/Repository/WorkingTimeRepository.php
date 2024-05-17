@@ -29,7 +29,17 @@ class WorkingTimeRepository extends ServiceEntityRepository implements WorkingTi
             ->setParameter('end', ($date->modify('+1 month'))->format('Y-m') . '-01')
             ->setParameter('employeeId', $employee->getId(), UuidType::NAME)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
+    }
+
+    public function findByDateForEmployee(\DateTimeImmutable $date, Employee $employee): ?WorkingTime
+    {
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.startDay = :date')
+            ->andWhere('w.employee = :employeeId')
+            ->setParameter('date', $date->format('Y-m-d'))
+            ->setParameter('employeeId', $employee->getId(), UuidType::NAME)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

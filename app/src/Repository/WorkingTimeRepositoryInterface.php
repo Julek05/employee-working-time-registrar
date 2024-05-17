@@ -13,4 +13,6 @@ interface WorkingTimeRepositoryInterface
      * @return WorkingTime[]
      */
     public function findByYearAndMonthForEmployee(\DateTimeImmutable $date, Employee $employee): array;
+
+    public function findByDateForEmployee(\DateTimeImmutable $date, Employee $employee): ?WorkingTime;
 }

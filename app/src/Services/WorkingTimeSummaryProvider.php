@@ -26,10 +26,21 @@ final class WorkingTimeSummaryProvider
     public function provide(GetWorkingTimeSummaryRequest $workingTimeSummaryRequest)
     {
         $employeeId = Uuid::fromString($workingTimeSummaryRequest->getEmployeeId());
-        $workingTimes = $this->workingTimeRepository->findByYearAndMonthForEmployee(
-            new \DateTimeImmutable($workingTimeSummaryRequest->getDate()),
-            $this->employeeRepository->findOneById($employeeId)
-        );
+        $employee = $this->employeeRepository->findOneById($employeeId);
+
+        $dateTimePattern = '/^\d{4}-\d{2}-\d{2}$/';
+        if (preg_match($dateTimePattern, $workingTimeSummaryRequest->getDate())) {
+            $workingTime = $this->workingTimeRepository->findByDateForEmployee(
+                new \DateTimeImmutable($workingTimeSummaryRequest->getDate()),
+                $employee
+            );
+            $workingTimes = $workingTime !== null ? [$workingTime] : [];
+        } else {
+            $workingTimes = $this->workingTimeRepository->findByYearAndMonthForEmployee(
+                new \DateTimeImmutable($workingTimeSummaryRequest->getDate()),
+                $employee
+            );
+        }
 
         $allHours = $this->countHours($workingTimes);
         if ($allHours > self::STANDARD_MONTH_HOURS) {
