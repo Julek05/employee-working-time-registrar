@@ -1,0 +1,45 @@
+services:
+    php:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: php-employee-working-time-registrar
+        ports:
+            - "9000:9000"
+        restart: always
+        working_dir: /var/www
+        volumes:
+            - ../app:/var/www
+        networks:
+            - employee-working-time-registrar
+        depends_on:
+            - mysql
+    nginx:
+        build:
+            context: .
+            dockerfile: NginxDockerFile
+        container_name: nginx-employee-working-time-registrar
+        links:
+            - php
+        restart: always
+        ports:
+            - "8050:80"
+        volumes:
+            - ../app:/var/www
+        networks:
+            - employee-working-time-registrar
+    mysql:
+        image: 'mysql:8.0'
+        container_name: mysql-employee-working-time-registrar
+        ports:
+            - "3307:3306"
+        environment:
+            MYSQL_DATABASE: 'employee-working-time-registrar'
+            MYSQL_USER: 'employee-working-time-registrar'
+            MYSQL_PASSWORD: 'employee-working-time-registrar'
+            MYSQL_ROOT_PASSWORD: 'qwerty123'
+        networks:
+            - employee-working-time-registrar
+
+networks:
+    employee-working-time-registrar:
