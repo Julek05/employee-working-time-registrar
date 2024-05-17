@@ -7,8 +7,10 @@ namespace App\Controller;
 use App\Entity\Employee;
 use App\Exception\TooHighDateTimeRangeException;
 use App\Request\AddEmployeeRequest;
+use App\Request\GetWorkingTimeSummaryRequest;
 use App\Request\RegisterWorkingTimeRequest;
 use App\Services\WorkingTimeSaver;
+use App\Services\WorkingTimeSummaryProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -65,5 +67,27 @@ class EmployeeController extends AbstractController
         }
 
         return $this->json(['message' => 'Working time has been added!']);
+    }
+
+    #[Route('/working_time_summary', name: 'working_time_summary', methods: ['GET'])]
+    public function workingTimeSummary(
+        Request $request,
+        ValidatorInterface $validator,
+        WorkingTimeSummaryProvider $workingTimeSummaryProvider
+    ): JsonResponse {
+        try {
+            $workingTimeSummaryRequest = GetWorkingTimeSummaryRequest::fromArray($request->toArray());
+
+            $errors = $validator->validate($workingTimeSummaryRequest);
+
+            if (count($errors) > 0) {
+                return new JsonResponse(['message' => (string) $errors], Response::HTTP_BAD_REQUEST);
+            }
+            $workingTimeSummaryDTO = $workingTimeSummaryProvider->provide($workingTimeSummaryRequest);
+        } catch (\Throwable $e) {
+            return $this->json(['message' => 'Internal Server Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return $this->json(['message' => 'Success', 'data' => $workingTimeSummaryDTO]);
     }
 }

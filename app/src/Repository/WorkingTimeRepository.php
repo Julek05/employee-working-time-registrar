@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Employee;
 use App\Entity\WorkingTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 
 /**
  * @extends ServiceEntityRepository<WorkingTime>
@@ -18,28 +20,16 @@ class WorkingTimeRepository extends ServiceEntityRepository implements WorkingTi
         parent::__construct($registry, WorkingTime::class);
     }
 
-    //    /**
-    //     * @return WorkingTime[] Returns an array of WorkingTime objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('w')
-    //            ->andWhere('w.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('w.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?WorkingTime
-    //    {
-    //        return $this->createQueryBuilder('w')
-    //            ->andWhere('w.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findByYearAndMonthForEmployee(\DateTimeImmutable $date, Employee $employee): array
+    {
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.startDay BETWEEN :start AND :end')
+            ->andWhere('w.employee = :employeeId')
+            ->setParameter('start', $date->format('Y-m') . '-01')
+            ->setParameter('end', ($date->modify('+1 month'))->format('Y-m') . '-01')
+            ->setParameter('employeeId', $employee->getId(), UuidType::NAME)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
